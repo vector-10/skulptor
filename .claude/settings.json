@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "ask": ["Bash"],
+    "deny": ["Edit(test-app/**)"]
+  }
+}
