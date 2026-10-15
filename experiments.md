@@ -10,6 +10,7 @@ Same prompt for every model, in a fresh folder, with no extra rules:
 |---|---|---|---|---|---|---|---|---|
 | Oct 14 | R-CLI 3.0.5 | moonshotai/kimi-k3 | No | Yes | ~$0.06 (with hello tests) | | Generic purple gradient, low contrast labels, mixed emoji icons | notes/kimi.png |
 | Oct 14 | R-CLI 3.0.5 | z-ai/glm-5.3 (medium) | ? | Yes | ~$0.06 (both GLM runs) | | Same template as Kimi, only colors changed (blue on navy) | notes/glm.png |
+| Oct 14 | R-CLI 3.0.5 | deepseek/deepseek-v4.1-flash (clean folder) | ? | Yes | ~$0.01 | | Same template again: purple accent, initials circle, centered dark card | notes/deepseek.png |
 
 ## Test 2: one round of human critique
 
@@ -19,6 +20,7 @@ Follow up prompt, same GLM session:
 
 | Date | Harness | Model | Result | Screenshot |
 |---|---|---|---|---|
+| Oct 14 | R-CLI 3.0.5 | deepseek/deepseek-v4.1-flash | Big jump: editorial look, serif name, dark side panel, red accent, cream background. Invented almost nothing. Still small with lots of empty space; "CONTACT" label under initials means nothing. | notes/deepseek-improved.png |
 | Oct 14 | R-CLI 3.0.5 | z-ai/glm-5.3 (medium) | Big jump: landscape card, matching line icons, clear hierarchy, yellow accent. Still repeats the company, invents fields (location, timezone, "NO. 0042"), empty left panel. | notes/glm-improved.png |
 
 ## Test 1b: contaminated runs (not a fair test)
