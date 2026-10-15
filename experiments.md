@@ -32,10 +32,23 @@ Run in the same folder as the GLM files, with R-CLI memory possibly on.
 | Oct 14 | R-CLI 3.0.5 | deepseek/deepseek-v4.1-flash | Copied the improved GLM layout and its invented extras (ref number, status, hours). Best looking so far, but not its own work. | ~$0.01 for both runs | notes/seek-contaminated.png |
 | Oct 14 | R-CLI 3.0.5 | deepseek/deepseek-v4.1-flash | After "improve it": removed all color and character. Overcorrected into a plain form. | (included above) | notes/seek-overcorrected.png |
 
+## Test 3: React + TypeScript validation (tasks.md)
+
+R-CLI 3.0.5, deepseek/deepseek-v4.1-flash, run inside `test-app/`, fresh thread, memory off. Reset to baseline between tasks.
+
+| Date | Task | tsc | build | Renders | Result | Cost | Time | Notes |
+|---|---|---|---|---|---|---|---|---|
+| Oct 15 | 1. Add ContactCard component | Pass | Pass | Pass | Pass | < $0.01 | Fast | Card with typed props, real tel/mailto links, unstyled (expected) |
+| Oct 15 | 2. Light/dark toggle with localStorage | Pass | Pass | Pass | Pass | ~$0.02 | 6m 50s | Read the code first, set theme before paint (no flash), reused existing button styles, ran tsc, build and eslint itself, then wrote a headless Chrome test and fixed its own wrong test assumptions. 15/15 checks. |
+| Oct 15 | 3. Fix planted counter bug | Pass | Pass | Pass | Pass | | Fast | Found the bug from the symptom alone, one line fix, ran build and lint. Did not read tasks.md. Its search tool failed because ripgrep (`rg`) isn't installed, so it fell back to `find`. |
+
+**Result: 3 of 3 tasks passed. DeepSeek V4.1 Flash in R-CLI can reliably change a real React + TypeScript app. Validation passed; move on to the design layer.**
+
 ## Findings so far
 
 * Different models produce the same default template from a short prompt.
 * The model can design well. One round of critique unlocked it. Skulptor's job is to automate that critique.
 * Context matters: nearby files or memory change the output a lot. Clean tests need an empty folder and a fresh thread. The design layer can use this on purpose with good examples.
+* Keep task prompts and answers outside the agent's reach. The agent can see the whole repo (it ran git status on the parent folder), so tasks.md inside the repo could spoil a test.
 * Vague critique ("improve it") gives random results, even worse ones. Critique must say what to fix, what to keep, and why.
 * Critique rules seen so far: don't repeat information, don't invent content that wasn't asked for, avoid empty dead space, use one consistent icon set, keep labels readable.
