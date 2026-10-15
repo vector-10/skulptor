@@ -15,10 +15,13 @@ Stack: open-weight models (DeepSeek / GLM / Qwen) → Backboard or OpenRouter �
 - Credit all open-source work (e.g. OpenCode) in the README.
 - Secrets live in `.env` (gitignored). Never commit keys. Inference budget < $10.
 
-## Current phase: validation
-Can an open model, via OpenCode, modify `test-app/` and get it working?
-- Pass: `tsc` and `npm run build` pass, the dev server renders, and ≥2 of 3 tasks in `tasks.md` succeed without help.
-- Log every run in `experiments.md`. Reset to the baseline between runs.
+## Notes
+- Read `notes.md` at the start of a session. It holds decisions and research.
+- After each research step or decision, write it to `notes.md` before moving on.
+- Log every test run in `experiments.md`. Reset to the baseline between runs.
+
+## Current phase: design layer
+Validation passed (3 of 3). Now building Skulptor as an Agent Skill. See `notes.md`.
 
 ## Working style
 User is new to building agents: explain briefly, plan before code, keep answers short, one step at a time, ask before big changes. Don't add scope.
