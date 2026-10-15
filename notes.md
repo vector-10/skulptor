@@ -4,6 +4,29 @@ Decisions and research, newest first. Test results live in `experiments.md`.
 
 ## Oct 15
 
+* Step 1 passed: the R-CLI agent (DeepSeek V4.1 Flash) opened `glm.png` with its read tool and described it correctly: layout, card colors, all card text, tab titles. Small mistakes: guessed "Fedora" (it's Pop!_OS), misread "backboard.io" as "backend.io", called a dark gray value blue. So the fallback is not needed. Lesson: use screenshots to judge layout, color and hierarchy; check exact text and small details in the code.
+* Step 2 passed: `scripts/screenshot.mjs` started `test-app`, waited for the page, and saved correct desktop (1440×900) and mobile (390×844) screenshots, both fully drawn, then stopped the server. No packages needed, it uses the installed Chrome.
+* Skill writing tips from Anthropic ([best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices), [engineering post](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) by Barry Zhang, Keith Lazuka, Mahesh Murag). What we use:
+  * Concise: only write what the model doesn't already know.
+  * Description in third person, says what it does and when to use it, with trigger words.
+  * Low freedom for fragile steps (run the screenshot script exactly), high freedom for design choices.
+  * Give a checklist the agent copies and ticks off. This also tracks the round count.
+  * Feedback loop: validate, fix, repeat. Only move on when it passes.
+  * One concrete example works better than a description (add one example critique).
+  * One word per idea: always "issue", "round", "brief".
+  * Evaluations first: at least 3 test tasks, compare against a baseline without the skill. Test on every model we use (DeepSeek, GLM).
+  * "Claude A writes, Claude B tests": Claude Code helps write the skill, R-CLI uses it, we feed what goes wrong back in. This is our setup.
+* Checked: the tips are not Claude only. The Agent Skills format is an open standard read by 30+ agents (Codex CLI, Gemini CLI, Cursor, VS Code, R-CLI), and the tips are general prompting advice that DeepSeek V4 guides repeat. Old DeepSeek R1 advice ("no system prompt, no examples") does not apply to V4. Real proof is the first run with DeepSeek.
+* Decision: no new baseline tests. Use Test 1 (contact card) as the before. Write the skill now.
+* Plan for the skill, in order:
+  1. Test: can the R-CLI agent view a screenshot it made itself? Riskiest part, test first. Fallback: the script sends the PNG to DeepSeek through the API and prints the critique.
+  2. Screenshot script: it starts the dev server, waits for the page, takes desktop (1440×900) and mobile (390×844) screenshots, then stops the server. The script starts the server because agents get stuck on `pnpm dev`.
+  3. `references/rules.md` + `references/critique.md`, then `SKILL.md`.
+  4. Test: contact card in a clean folder vs `notes/deepseek.png`, then one task in `test-app/`.
+  5. README (credit R-CLI, screenshots), then first user + DEV post (Oct 16 to 18).
+* Rules: start with almost none, test, then add rules for what actually fails. Rules must be checkable (countable or visible), but not so strict that every page looks the same. Layers to cover over time: layout, typography, color, spacing, content, responsive, accessibility, code.
+* Money: the skill is free and open. Value is in selling results (pages for clients), maybe a hosted version later, and proof of skill.
+
 * Validation passed: 3 of 3 tasks. DeepSeek V4.1 Flash in R-CLI can change a real React + TypeScript app. Details in `experiments.md`, Test 3.
 * Deleted `tasks.md`. Its prompts, pass criteria and reset steps are in `experiments.md`, and keeping them in the repo could spoil tests.
 * Verified online: `deepseek/deepseek-v4.1-flash` on OpenRouter takes text and image input, text output, 1M token context. Released Sep 10, 2026, open weights (MIT). So it can look at its own screenshots for the critique step. Sources: [OpenRouter model page](https://openrouter.ai/deepseek/deepseek-v4.1-flash), [OpenRouter V4 vision guide](https://openrouter.ai/blog/insights/deepseek-v4-vision/), [NVIDIA model card](https://build.nvidia.com/deepseek-ai/deepseek-v4.1-flash/modelcard).
