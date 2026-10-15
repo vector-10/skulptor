@@ -36,6 +36,24 @@ Run in the same folder as the GLM files, with R-CLI memory possibly on.
 
 R-CLI 3.0.5, deepseek/deepseek-v4.1-flash, run inside `test-app/`, fresh thread, memory off. Reset to baseline between tasks.
 
+Baseline: fresh Vite React + TS app with one planted bug (the counter's `count + 1` changed to `count - 1`).
+
+Task prompts, pasted exactly:
+
+1. Create a ContactCard component in src/components/ContactCard.tsx. It takes name, phone, email and company as typed props. Render one ContactCard in App.tsx with sample data.
+2. Add a button that switches the page between light and dark mode. Remember the choice in localStorage so it stays after a page reload.
+3. The counter button goes down when I click it. It should go up. Find the bug and fix it.
+
+Pass criteria, checked with tools: `pnpm exec tsc -b` passes, `pnpm build` passes, `pnpm dev` shows the change in the browser, and at least 2 of 3 tasks pass with no help.
+
+Reset between runs, from the repo root:
+
+```
+git checkout -- test-app
+git clean -fd test-app
+rm -rf test-app/.backboard
+```
+
 | Date | Task | tsc | build | Renders | Result | Cost | Time | Notes |
 |---|---|---|---|---|---|---|---|---|
 | Oct 15 | 1. Add ContactCard component | Pass | Pass | Pass | Pass | < $0.01 | Fast | Card with typed props, real tel/mailto links, unstyled (expected) |
