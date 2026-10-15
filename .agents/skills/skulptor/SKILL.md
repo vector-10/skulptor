@@ -9,7 +9,7 @@ Use this for new UI or visual changes. For changes with no visual effect (logic,
 
 ## Checklist
 
-Copy this into your response and tick each item as you go:
+Copy this into your first response and tick each item as you go. Write the brief and every critique in your response, so the user can see them:
 
 ```
 Skulptor progress:
@@ -47,13 +47,20 @@ The script is `scripts/screenshot.mjs` inside this skill's folder (usually `.age
 node <skill folder>/scripts/screenshot.mjs
 ```
 
-Do not change or replace this command. It starts the dev server, saves `screenshots/desktop.png` (1440×900) and `screenshots/mobile.png` (390×844), then stops the server. Open both images with your read tool and look at them.
+Do not change or replace this command. It starts the dev server, saves screenshots to `screenshots/`, then stops the server:
+
+- `desktop.png` (1440×900) and `mobile.png` (390×844): the first screen, before scrolling. Use these for the 5 second test.
+- `desktop-full.png` and `mobile-full.png`: the whole page. Use these for everything below the first screen.
+
+Open all 4 images with your read tool and look at them. If the script warns that only first screen images were taken, critique those.
 
 If the script fails, read its error and fix the cause. If it fails twice, stop and report the error.
 
 ## 5. Critique
 
 Compare the screenshots against the rules below. An issue is a broken rule. Taste opinions are not issues.
+
+Everything visible in the screenshot is your responsibility, including leftovers from the starter app (borders, backgrounds, demo styles). If it shows on screen and does not belong to the design, it is an issue, even if you did not write it.
 
 - At most 3 issues per round, most important first.
 - For each issue: what is wrong, where, which rule, and the fix.
@@ -82,17 +89,20 @@ Stop as soon as one of these is true:
 
 ## 7. Report
 
+Always include all of these:
+
 - The brief.
-- What changed in each round.
+- Each round's critique (issues and keep list) and what you changed.
 - Issues left, if any.
 - The paths of the final screenshots, so the user can look at them.
 
 ## Rules
 
-1. Only the content the user asked for. Do not invent fields, numbers or labels.
-2. Do not show the same information twice.
-3. No large empty areas. Every area has a job.
-4. One icon set in one style. No emoji as icons.
-5. Text is easy to read: strong contrast with its background, labels not tiny.
-6. Not the default AI template (see Avoid in the brief).
-7. Mobile: no sideways scrolling, nothing cut off or overlapping.
+1. Content: only what was asked. No invented fields.
+2. No duplicate information.
+3. Whitespace must be active (framing, grouping, emphasis), never dead. A single component may sit in generous whitespace; a page may not have dead zones.
+4. Hierarchy: pass the 5 second test (the eye lands on the primary element first). Size steps between levels ≥ 1.5×.
+5. Contrast: WCAG AA (4.5:1 text, 3:1 UI elements).
+6. Consistency: one icon set, one spacing scale.
+7. Not the default AI template (see Avoid in the brief).
+8. Responsive: no horizontal scroll at 390px, touch targets ≥ 44×44px.

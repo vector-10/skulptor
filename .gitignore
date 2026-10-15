@@ -6,3 +6,6 @@
 node_modules/
 dist/
 .backboard/
+
+# Skulptor screenshots (made fresh on every run)
+screenshots/

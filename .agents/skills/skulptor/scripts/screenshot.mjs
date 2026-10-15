@@ -1,21 +1,34 @@
 #!/usr/bin/env node
 // Skulptor screenshot script.
 // Run it inside an app folder. It starts the dev server, waits for the page,
-// saves desktop and mobile screenshots to ./screenshots, then stops the server.
-// No packages needed: it uses Node (18+) and the Chrome already installed.
+// saves screenshots to ./screenshots, then stops the server:
+//   desktop.png, mobile.png            the first screen (what shows before scrolling)
+//   desktop-full.png, mobile-full.png  the whole page
+// No packages needed: it uses Node and the Chrome already installed.
+// Full page screenshots need Node 22+ (built in WebSocket); older Node gets first screen only.
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const PORT = 5199;
 const URL = `http://localhost:${PORT}/`;
 const WAIT_MS = 30_000;
+// Time for React to render after the page load event.
+const RENDER_MS = 1_000;
+// Very tall images get scaled down by models until text is unreadable, so cap the full page height.
+const MAX_FULL_HEIGHT = 8_000;
 const SIZES = [
-  { name: "desktop", width: 1440, height: 900 },
-  { name: "mobile", width: 390, height: 844 },
+  { name: "desktop", width: 1440, height: 900, mobile: false },
+  { name: "mobile", width: 390, height: 844, mobile: true },
 ];
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function withTimeout(promise, ms, message) {
+  return Promise.race([promise, sleep(ms).then(() => Promise.reject(new Error(message)))]);
+}
 
 function findChrome() {
   if (process.env.CHROME_PATH) return process.env.CHROME_PATH;
@@ -56,30 +69,140 @@ async function waitForPage(server) {
     } catch {
       // not up yet
     }
-    await new Promise((r) => setTimeout(r, 500));
+    await sleep(500);
   }
   throw new Error(`page did not load at ${URL} within ${WAIT_MS / 1000}s`);
 }
 
-function screenshot(chrome, { name, width, height }) {
-  const out = resolve("screenshots", `${name}.png`);
+function save(file, base64) {
+  const out = resolve("screenshots", file);
+  writeFileSync(out, Buffer.from(base64, "base64"));
+  return out;
+}
+
+// Minimal Chrome DevTools Protocol client over the built in WebSocket.
+function connect(wsUrl) {
+  return new Promise((resolveConn, rejectConn) => {
+    const ws = new WebSocket(wsUrl);
+    let nextId = 1;
+    const pending = new Map();
+    const waiters = [];
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.id && pending.has(msg.id)) {
+        const { res, rej } = pending.get(msg.id);
+        pending.delete(msg.id);
+        if (msg.error) rej(new Error(msg.error.message));
+        else res(msg.result);
+      } else if (msg.method) {
+        const i = waiters.findIndex((w) => w.method === msg.method && w.sessionId === msg.sessionId);
+        if (i !== -1) waiters.splice(i, 1)[0].res(msg.params);
+      }
+    };
+    ws.onerror = () => rejectConn(new Error("could not connect to Chrome"));
+    ws.onopen = () =>
+      resolveConn({
+        send(method, params = {}, sessionId) {
+          const id = nextId++;
+          ws.send(JSON.stringify({ id, method, params, sessionId }));
+          return new Promise((res, rej) => pending.set(id, { res, rej }));
+        },
+        once(method, sessionId) {
+          return new Promise((res) => waiters.push({ method, sessionId, res }));
+        },
+        close() {
+          ws.close();
+        },
+      });
+  });
+}
+
+async function fullScreenshots(chrome) {
   // A temp profile so it never touches the user's open Chrome.
   const profile = mkdtempSync(join(tmpdir(), "skulptor-chrome-"));
-  const result = spawnSync(chrome, [
-    "--headless=new",
-    "--disable-gpu",
-    "--hide-scrollbars",
-    `--user-data-dir=${profile}`,
-    `--window-size=${width},${height}`,
-    "--virtual-time-budget=3000", // give React time to render
-    `--screenshot=${out}`,
-    URL,
-  ]);
-  rmSync(profile, { recursive: true, force: true });
-  if (result.status !== 0 || !existsSync(out)) {
-    throw new Error(`Chrome failed on ${name}: ${result.stderr?.toString().trim()}`);
+  const browser = spawn(
+    chrome,
+    ["--headless=new", "--disable-gpu", "--hide-scrollbars", `--user-data-dir=${profile}`, "--remote-debugging-port=0", "about:blank"],
+    { stdio: ["ignore", "ignore", "pipe"] },
+  );
+  try {
+    const wsUrl = await withTimeout(
+      new Promise((res, rej) => {
+        let log = "";
+        browser.stderr.on("data", (chunk) => {
+          log += chunk;
+          const match = log.match(/DevTools listening on (ws:\/\/\S+)/);
+          if (match) res(match[1]);
+        });
+        browser.on("exit", (code) => rej(new Error(`Chrome exited early (code ${code})`)));
+      }),
+      10_000,
+      "Chrome did not start within 10s",
+    );
+    const cdp = await connect(wsUrl);
+    const { targetId } = await cdp.send("Target.createTarget", { url: "about:blank" });
+    const { sessionId } = await cdp.send("Target.attachToTarget", { targetId, flatten: true });
+    const page = (method, params) => cdp.send(method, params, sessionId);
+    await page("Page.enable");
+
+    const outputs = [];
+    for (const { name, width, height, mobile } of SIZES) {
+      await page("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile });
+      const loaded = cdp.once("Page.loadEventFired", sessionId);
+      await page("Page.navigate", { url: URL });
+      await withTimeout(loaded, WAIT_MS, `page did not finish loading for ${name}`);
+      await sleep(RENDER_MS);
+
+      const first = await page("Page.captureScreenshot", { format: "png" });
+      outputs.push(save(`${name}.png`, first.data));
+
+      const { cssContentSize } = await page("Page.getLayoutMetrics");
+      const fullHeight = Math.min(Math.ceil(cssContentSize.height), MAX_FULL_HEIGHT);
+      const full = await page("Page.captureScreenshot", {
+        format: "png",
+        captureBeyondViewport: true,
+        clip: { x: 0, y: 0, width, height: fullHeight, scale: 1 },
+      });
+      outputs.push(save(`${name}-full.png`, full.data));
+    }
+    cdp.close();
+    return outputs;
+  } finally {
+    // Wait for Chrome to exit before removing its profile, or it is still writing files there.
+    if (browser.exitCode === null && browser.signalCode === null) {
+      const exited = new Promise((r) => browser.once("exit", r));
+      browser.kill();
+      await withTimeout(exited, 5_000, "Chrome did not exit").catch(() => browser.kill("SIGKILL"));
+    }
+    try {
+      rmSync(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
+    } catch {
+      // Only a temp folder; the OS cleans it up.
+    }
   }
-  return out;
+}
+
+// Fallback for Node without WebSocket: first screen only, using Chrome's screenshot flag.
+function firstScreenScreenshots(chrome) {
+  return SIZES.map(({ name, width, height }) => {
+    const out = resolve("screenshots", `${name}.png`);
+    const profile = mkdtempSync(join(tmpdir(), "skulptor-chrome-"));
+    const result = spawnSync(chrome, [
+      "--headless=new",
+      "--disable-gpu",
+      "--hide-scrollbars",
+      `--user-data-dir=${profile}`,
+      `--window-size=${width},${height}`,
+      "--virtual-time-budget=3000", // give React time to render
+      `--screenshot=${out}`,
+      URL,
+    ]);
+    rmSync(profile, { recursive: true, force: true });
+    if (result.status !== 0 || !existsSync(out)) {
+      throw new Error(`Chrome failed on ${name}: ${result.stderr?.toString().trim()}`);
+    }
+    return out;
+  });
 }
 
 async function main() {
@@ -96,7 +219,12 @@ async function main() {
 
   try {
     await waitForPage(server);
-    for (const size of SIZES) console.log(screenshot(chrome, size));
+    if (typeof WebSocket === "undefined") {
+      console.warn(`Node ${process.version} has no WebSocket (needs 22+). Taking first screen screenshots only.`);
+      for (const out of firstScreenScreenshots(chrome)) console.log(out);
+    } else {
+      for (const out of await fullScreenshots(chrome)) console.log(out);
+    }
   } finally {
     stopServer(server);
   }

@@ -62,6 +62,16 @@ rm -rf test-app/.backboard
 
 **Result: 3 of 3 tasks passed. DeepSeek V4.1 Flash in R-CLI can reliably change a real React + TypeScript app. Validation passed; move on to the design layer.**
 
+## Test 4: Skulptor skill, first run
+
+R-CLI 3.0.5, deepseek/deepseek-v4.1-flash, inside `test-app/`, fresh thread, memory off, skill loaded with `/skills`. Compare with Test 1.
+
+> $skulptor Create a contact card page in this app. Show name, phone, email and company.
+
+| Date | tsc | build | Renders | Cost | Time | Result |
+|---|---|---|---|---|---|---|
+| Oct 15 | Pass | Pass | Pass | | 6m 45s | Big design jump: "letterpress" direction, large serif name, one amber accent, mono labels, no icons or avatar. No default template, nothing invented beyond sample data, real tel/mailto links, mobile stacks fine. It ran the screenshot script and checked light mode on its own. Misses: lots of empty space on desktop (rule 3), Vite starter borders still visible (it saw the leftover CSS but called it out of scope). The report had no brief, no rounds and no issue list, so the critique step was weak or skipped. |
+
 ## Findings so far
 
 * Different models produce the same default template from a short prompt.
