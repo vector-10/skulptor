@@ -1,19 +1,17 @@
 ---
 name: skulptor
-description: Plans, builds, screenshots and critiques frontend UI so it looks designed, not generic. Use when building or restyling a page, component, layout or landing page in a web app (React, Vite, HTML and CSS). Writes a design brief, builds it, takes desktop and mobile screenshots, finds issues against design rules, and fixes them in at most 2 rounds.
+description: Plans, builds, screenshots and critiques frontend UI so it looks distinctive, not generic. Use when building or restyling a page, component, layout or landing page in a web app (React, Vite, HTML and CSS). Plans a design from the subject's own world, builds it, takes desktop and mobile screenshots, finds issues against design rules, and fixes them in at most 2 rounds.
 ---
 
 # Skulptor
 
-Use this for new UI or visual changes. For changes with no visual effect (logic, data, state bugs), skip it.
-
 ## Checklist
 
-Copy this into your first response and tick each item as you go. Write the brief and every critique in your response, so the user can see them:
+Copy this into your first response and tick each item as you go. Write the plan and every critique in your response, so the user can see them:
 
 ```
 Skulptor progress:
-- [ ] 1. Brief written
+- [ ] 1. Plan written and checked
 - [ ] 2. Built
 - [ ] 3. Checks pass
 - [ ] 4. Round 1 of 2: look, critique, fix
@@ -21,19 +19,31 @@ Skulptor progress:
 - [ ] 6. Report given
 ```
 
-## 1. Brief
+## 1. Plan
 
-Before any code, write these 5 lines:
+Before any code, write:
 
-- **Purpose:** what the UI is for.
-- **User:** who looks at it.
-- **Content:** only what the user asked for. List it.
-- **Direction:** one visual idea in one sentence (type, color, mood) that fits this purpose.
-- **Avoid:** the default AI template: purple or blue gradient, initials circle, centered card on a dark background, emoji as icons.
+- **Purpose:** what the UI is for and who looks at it.
+- **Content:** what the user gave or asked for. List it.
+- **Subject's world:** 3 to 5 materials, objects, places or words from the subject itself (for a bakery: flour sacks, oven heat, chalkboard menus, paper bags). Distinctive choices come from here.
+- **Signature moment:** the one bold element the page is remembered for. Keep everything around it quiet.
+- **Color:** 4 to 6 named hex values.
+- **Type:** typefaces and their roles. One or two families; if two, clearly different.
+- **Layout:** an ASCII wireframe for desktop and one for mobile.
+
+Then check the plan: would you make this same plan for any similar page? Compare it with the defaults below. Revise every part that matches a default and say what you changed. The user's own words always win: if they ask for one of these looks, use it.
+
+**Defaults to avoid** (the most common AI looks right now):
+
+1. Cream background, high contrast serif display, terracotta or clay accent.
+2. Near black background with one bright acid green or vermilion accent; purple or blue gradients.
+3. Broadsheet layout: hairline rules, zero border radius, dense newspaper columns.
+4. SaaS card kit: identical rounded cards, the same soft shadow under each, gradient washes.
+5. Template chrome: an ALL CAPS label above every heading, text joined with middle dots (A · B · C), monospace for small labels, arrows added to buttons, initials circles, emoji as icons.
 
 ## 2. Build
 
-Read the existing code first. Reuse its styles and components. Use typed props and small components.
+Follow the plan. If the project has a real design system, use it. Starter template styles (like the Vite demo page) are not a design system: replace them.
 
 ## 3. Checks
 
@@ -71,9 +81,9 @@ Example:
 
 ```
 Round 1 of 2
-Issue 1: Large empty area right of the card on desktop. Rule 3. Fix: widen the card and put the contact rows in two columns.
-Issue 2: Labels PHONE and EMAIL are light gray on white and hard to read. Rule 5. Fix: darken the labels to #555 or darker.
-Keep: serif name, single red accent, line icons.
+Issue 1: On desktop the menu is one narrow column with empty space to its right. Rule 9. Fix: two column menu grid at 1440px.
+Issue 2: Prices in #B0A89C on #FFFFFF are too light. Rule 5. Fix: darken to #6B6259.
+Keep: the signature photo strip, the type scale, the section order.
 ```
 
 ## 6. Fix and stop
@@ -89,20 +99,18 @@ Stop as soon as one of these is true:
 
 ## 7. Report
 
-Always include all of these:
-
-- The brief.
 - Each round's critique (issues and keep list) and what you changed.
 - Issues left, if any.
 - The paths of the final screenshots, so the user can look at them.
 
 ## Rules
 
-1. Content: only what was asked. No invented fields.
+1. Content: no invented facts (prices, claims, fields) beyond what the user gave or asked you to create.
 2. No duplicate information.
 3. Whitespace must be active (framing, grouping, emphasis), never dead. A single component may sit in generous whitespace; a page may not have dead zones.
 4. Hierarchy: pass the 5 second test (the eye lands on the primary element first). Size steps between levels ≥ 1.5×.
 5. Contrast: WCAG AA (4.5:1 text, 3:1 UI elements).
 6. Consistency: one icon set, one spacing scale.
-7. Not the default AI template (see Avoid in the brief).
+7. None of the defaults to avoid, unless the user asked for it.
 8. Responsive: no horizontal scroll at 390px, touch targets ≥ 44×44px.
+9. Desktop is not stretched mobile: at 1440px the layout uses the width (grids, asymmetry, side by side content), and sections do not all share the same layout.

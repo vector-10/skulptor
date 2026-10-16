@@ -51,7 +51,7 @@ Reset between runs, from the repo root:
 ```
 git checkout -- test-app
 git clean -fd test-app
-rm -rf test-app/.backboard
+rm -rf test-app/.backboard test-app/screenshots
 ```
 
 | Date | Task | tsc | build | Renders | Result | Cost | Time | Notes |
@@ -71,6 +71,14 @@ R-CLI 3.0.5, deepseek/deepseek-v4.1-flash, inside `test-app/`, fresh thread, mem
 | Date | tsc | build | Renders | Cost | Time | Result |
 |---|---|---|---|---|---|---|
 | Oct 15 | Pass | Pass | Pass | | 6m 45s | Big design jump: "letterpress" direction, large serif name, one amber accent, mono labels, no icons or avatar. No default template, nothing invented beyond sample data, real tel/mailto links, mobile stacks fine. It ran the screenshot script and checked light mode on its own. Misses: lots of empty space on desktop (rule 3), Vite starter borders still visible (it saw the leftover CSS but called it out of scope). The report had no brief, no rounds and no issue list, so the critique step was weak or skipped. |
+
+## Test 5: Skulptor skill, bakery landing page
+
+Same setup as Test 4, with the 8 design rules and full page screenshots. Prompt: one page site for "Crumb & Co" bakery (hero, 6 item menu, hours, visit us), warm and modern, must look great on a phone.
+
+| Date | tsc | build | Renders | Cost | Time | Result |
+|---|---|---|---|---|---|---|
+| Oct 15 | Pass | Pass | Pass | Small (credits left: $4.65) | 22m 58s | Real brand: cream, espresso, paprika accent, Fraunces serif, arch photo, stamp, menu with price leaders. Did 2 critique rounds and fixed 3 issues. Mobile strong. Misses: desktop feels basic and sparse, stamp text overlaps ("BAKEDBAKED"), "14 Mill Street" may render as "¼", fonts and photos load from the internet, report skipped the brief and critique text. User verdict: tasteful but basic, better on mobile than desktop. |
 
 ## Findings so far
 

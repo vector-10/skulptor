@@ -2,6 +2,16 @@
 
 Decisions and research, newest first. Test results live in `experiments.md`.
 
+## Oct 16
+
+* Studied the top design skills:
+  * [Anthropic frontend-design](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md) (most installed). Lessons: ground choices in the subject's own world (materials, vernacular); the hero opens with the most characteristic thing in that world; plan as tokens first (4 to 6 named hex colors, type roles, layout as an ASCII wireframe), then check the plan against "would I make this for any similar page?" and revise before code; "spend your boldness in one place"; "remove one accessory". It lists 5 current AI design clichés.
+  * Our bakery page (Test 5) hit cliché 1 exactly (cream background, high contrast serif, terracotta accent) and cliché 5 (all caps eyebrow "NEIGHBORHOOD BAKERY", middle dot strings). The agent swapped one default for another. Our Avoid list was too narrow.
+  * [Taste Skill](https://github.com/Leonxlnx/taste-skill) (Leonxlnx): almost the same loop as ours (Node 22, Chrome, screenshots at 3 widths, fix top 3 problems, up to 3 rounds). Its extra: a script deals 3 of 20 researched art directions and the agent picks one, which forces variety; real open licensed imagery with credits. Prior art: credit it if we borrow ideas. Our difference: built and tested for open models (DeepSeek in R-CLI), cheap.
+  * SKILL.md rewritten from these lessons. Removed: the "when to use" line (the user calls it on purpose), "reuse its styles" (kept the Vite leftovers in Test 4), the example critique that praised "serif name, single red accent" (taught cliché 1), the brief repeated in the report. Changed: Brief became Plan (subject's world, signature moment, 4 to 6 hex colors, type roles, ASCII wireframes, then the "would I make this for any page?" check); Avoid list replaced by the 5 default looks; rule 1 now forbids invented facts, not all copy; new rule 9 "desktop is not stretched mobile". Kept 2 rounds: the bakery's problem was the plan, not too few rounds.
+  * To do: credit Anthropic's frontend-design in the README (our default looks list is adapted from it) and check its license first.
+  * Others to look at later: Vercel web-design-guidelines (UI review), Emil Kowalski (motion), Jakub Krehel's better-* (interface review).
+
 ## Oct 15
 
 * Step 1 passed: the R-CLI agent (DeepSeek V4.1 Flash) opened `glm.png` with its read tool and described it correctly: layout, card colors, all card text, tab titles. Small mistakes: guessed "Fedora" (it's Pop!_OS), misread "backboard.io" as "backend.io", called a dark gray value blue. So the fallback is not needed. Lesson: use screenshots to judge layout, color and hierarchy; check exact text and small details in the code.
@@ -20,6 +30,8 @@ Decisions and research, newest first. Test results live in `experiments.md`.
 * Decision: no new baseline tests. Use Test 1 (contact card) as the before. Write the skill now.
 * Test 4 (first skill run) fixes in SKILL.md: brief and critiques must be written in the response and repeated in the report; everything visible in the screenshot counts (starter leftovers too); rule 3 made measurable ("about half the screenshot empty is an issue"). User pointed out this would punish a card that rightly sits in open space. Rules rewritten in design terms (shorter, the model already knows them): active vs dead whitespace, hierarchy (5 second test, ≥ 1.5× size steps), WCAG AA contrast, one icon set and spacing scale, 44px touch targets. 8 rules now. Sources: active/passive white space ([Logoworks](https://logoworks.com/white-space-closer-look-area-design-elements/), [CorelDRAW](https://coreldraw.com/en/tips/graphic-design-principles/white-space)); 5 second test and 1.5× are practitioner rules of thumb from community critique skills.
 * Known gap fixed: the screenshot script now uses the Chrome DevTools Protocol (built in WebSocket, Node 22+) to save 4 images: `desktop.png`, `mobile.png` (first screen) and `desktop-full.png`, `mobile-full.png` (whole page, height capped at 8000px so models don't shrink it to unreadable). Older Node falls back to first screen only with a warning.
+* Full page capture tested on the Vite starter: mobile-full (390×924) shows more than mobile (390×844); desktop images match because the starter fits in 900px. First version crashed on cleanup (deleted Chrome's temp profile while Chrome was still writing); fixed by waiting for Chrome to exit.
+* Bug found: `test-app/screenshots/*.png` had been committed by accident, so resets brought them back. Untracked them and added `screenshots/` to the root `.gitignore`.
 * The user can also open the live page after a run: `pnpm dev` in `test-app/`, then the printed URL.
 * Plan for the skill, in order:
   1. Test: can the R-CLI agent view a screenshot it made itself? Riskiest part, test first. Fallback: the script sends the PNG to DeepSeek through the API and prints the critique.
