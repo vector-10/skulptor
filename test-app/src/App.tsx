@@ -1,116 +1,76 @@
-import breadHero from './assets/bread-hero.jpg'
-import croissants from './assets/croissants.jpg'
-import loaves from './assets/loaves.jpg'
 import './App.css'
 
-type MenuItem = {
+type Piece = {
+  index: string
   name: string
-  description: string
   price: string
 }
 
-const menu: MenuItem[] = [
+const pieces: Piece[] = [
+  { index: '01', name: 'Adire Wrap Dress', price: '₦185,000' },
+  { index: '02', name: 'Aso-oke Structured Jacket', price: '₦240,000' },
+  { index: '03', name: 'Indigo Wide Trousers', price: '₦120,000' },
+  { index: '04', name: 'Tie-dye Silk Shirt', price: '₦95,000' },
+  { index: '05', name: 'Woven Evening Skirt', price: '₦160,000' },
+  { index: '06', name: 'Indigo Head Wrap', price: '₦25,000' },
+]
+
+const facts = [
+  { label: 'the cloth', text: 'Hand-dyed adire and aso-oke.' },
+  { label: 'the cut', text: 'Every piece cut to order in the studio.' },
+  { label: 'the wait', text: 'Made to measure, ready in three weeks.' },
+]
+
+const channels = [
   {
-    name: 'Country Sourdough',
-    description: '36-hour ferment, blistered crust, open crumb.',
-    price: '$8.50',
+    name: 'WhatsApp',
+    label: '+234 803 555 0142',
+    href: 'https://wa.me/2348035550142',
   },
   {
-    name: 'Butter Croissant',
-    description: 'Seventy-two layers of cultured butter, folded by hand.',
-    price: '$4.25',
+    name: 'Email',
+    label: 'hello@odastudio.ng',
+    href: 'mailto:hello@odastudio.ng',
   },
   {
-    name: 'Seeded Rye',
-    description: 'Dark rye rolled in sunflower, sesame and flax.',
-    price: '$9.00',
-  },
-  {
-    name: 'Cinnamon Knot',
-    description: 'Cardamom sugar, knotted dough, pulled warm from the oven.',
-    price: '$4.75',
-  },
-  {
-    name: 'Almond Danish',
-    description: 'Frangipane, toasted flakes, a squeeze of lemon.',
-    price: '$5.25',
-  },
-  {
-    name: 'Morning Bun',
-    description: 'Cinnamon and orange zest with a caramelised bottom.',
-    price: '$4.50',
+    name: 'Instagram',
+    label: '@odastudio',
+    href: 'https://www.instagram.com/odastudio',
   },
 ]
 
-const hours = [
-  { days: 'Monday – Friday', time: '7am – 6pm' },
-  { days: 'Saturday', time: '8am – 4pm' },
-  { days: 'Sunday', time: 'Closed' },
-]
-
-const contact = [
-  {
-    label: '+1 (555) 201-8890',
-    href: 'tel:+15552018890',
-    icon: 'phone' as const,
-  },
-  {
-    label: 'hello@crumbandco.com',
-    href: 'mailto:hello@crumbandco.com',
-    icon: 'mail' as const,
-  },
-]
-
-function Icon({ name }: { name: 'phone' | 'mail' }) {
-  const paths: Record<typeof name, string> = {
-    phone:
-      'M5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6.5 6.5l1.5-2 4 1.5v3a1.5 1.5 0 0 1-1.7 1.5A16.5 16.5 0 0 1 3.5 5.2 1.5 1.5 0 0 1 5 3.5Z',
-    mail: 'M3.5 6.5h17v11h-17z M3.5 7l8.5 6 8.5-6',
-  }
-
+// The adire resist rings, drawn once and referenced by every patterned surface.
+function AdireDefs() {
   return (
-    <svg
-      className="icon"
-      viewBox="0 0 24 24"
-      width="22"
-      height="22"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d={paths[name]} />
+    <svg className="svg-defs" aria-hidden="true" focusable="false">
+      <defs>
+        <pattern id="adire" width="120" height="120" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="30" cy="30" r="16" />
+            <circle cx="90" cy="30" r="7" />
+            <circle cx="90" cy="90" r="10" />
+            <circle cx="0" cy="60" r="7" />
+            <circle cx="120" cy="60" r="7" />
+            <path d="M25 90h10M30 85v10" />
+          </g>
+          <g fill="currentColor">
+            <circle cx="30" cy="30" r="2.6" />
+            <circle cx="90" cy="30" r="2" />
+            <circle cx="90" cy="90" r="2.2" />
+            <circle cx="60" cy="60" r="1.6" />
+            <circle cx="24" cy="104" r="1.6" />
+            <circle cx="36" cy="104" r="1.6" />
+          </g>
+        </pattern>
+      </defs>
     </svg>
   )
 }
 
-function Stamp() {
+function Pattern({ className }: { className?: string }) {
   return (
-    <svg
-      className="stamp"
-      viewBox="0 0 120 120"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <defs>
-        <path
-          id="stamp-arc"
-          d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"
-        />
-      </defs>
-      <circle cx="60" cy="60" r="59" fill="none" stroke="currentColor" strokeWidth="1.2" />
-      <text className="stamp__text">
-        <textPath href="#stamp-arc" startOffset="0">
-          baked before sunrise · est. 2009 · baked before sunrise · est. 2009 ·
-        </textPath>
-      </text>
-      <path
-        d="M60 42l3.4 12.6L76 58l-12.6 3.4L60 74l-3.4-12.6L44 58l12.6-3.4Z"
-        fill="currentColor"
-      />
+    <svg className={className ? `pat ${className}` : 'pat'} aria-hidden="true">
+      <rect width="100%" height="100%" fill="url(#adire)" />
     </svg>
   )
 }
@@ -118,129 +78,163 @@ function Stamp() {
 function App() {
   return (
     <>
-      <header className="topbar">
-        <a className="wordmark" href="#top">
-          Crumb<span>&nbsp;&amp;&nbsp;</span>Co
+      <AdireDefs />
+
+      <a className="skip" href="#main">
+        Skip to content
+      </a>
+
+      <header className="site-header">
+        <a className="logo" href="#top">
+          Ọ̀dà Studio
         </a>
-        <nav className="nav" aria-label="Sections">
-          <a href="#menu">Menu</a>
-          <a href="#hours">Hours</a>
+        <nav className="site-nav" aria-label="Sections">
+          <a href="#collection">Collection</a>
+          <a href="#studio">Studio</a>
           <a href="#visit">Visit</a>
         </nav>
+        <a className="btn btn-small" href="#visit">
+          Book a fitting
+        </a>
       </header>
 
-      <main id="top">
-        <section className="hero" aria-labelledby="hero-title">
-          <div className="hero__copy">
-            <p className="eyebrow">Neighborhood bakery</p>
-            <h1 id="hero-title">
-              Crumb <em>&amp;</em> Co
+      <main id="main">
+        <section className="hero">
+          <Pattern className="pat-hero" />
+          <div className="hero-main">
+            <div className="weave" aria-hidden="true">
+              <Pattern />
+            </div>
+            <h1 className="wordmark">
+              Ọ̀dà <em>Studio</em>
             </h1>
-            <p className="hero__line">Fresh bread every morning since 2009</p>
-            <a className="button" href="#menu">
-              See the menu
-            </a>
           </div>
-          <figure className="hero__media">
-            <img
-              src={breadHero}
-              alt="A dark sourdough loaf, sliced on a wooden board"
-              width="1400"
-              height="933"
-            />
-            <figcaption className="hero__stamp">
-              <Stamp />
-            </figcaption>
-          </figure>
-        </section>
-
-        <section className="menu" id="menu" aria-labelledby="menu-title">
-          <div className="section-head">
-            <h2 id="menu-title">Menu</h2>
-            <p className="note">
-              Everything is baked before sunrise. Croissants usually sell out by
-              10am.
+          <div className="hero-foot">
+            <div>
+              <p className="lede">
+                Hand-dyed adire and aso-oke, cut to order in Lagos since 2018.
+              </p>
+              <div className="cta-row">
+                <a className="btn" href="#visit">
+                  Book a fitting
+                </a>
+                <a className="text-link" href="#collection">
+                  See the collection
+                </a>
+              </div>
+            </div>
+            <p className="hero-note">
+              The current collection<span>Indigo Hours</span>
             </p>
           </div>
-
-          <div className="menu__body">
-            <figure className="menu__media">
-              <img
-                src={croissants}
-                alt="Fresh croissants on a slate board, dusted with sugar"
-                width="1400"
-                height="1050"
-              />
-            </figure>
-
-            <ul className="menu__list">
-              {menu.map((item) => (
-                <li className="item" key={item.name}>
-                  <div className="item__row">
-                    <h3 className="item__name">{item.name}</h3>
-                    <span className="item__leader" aria-hidden="true" />
-                    <span className="item__price">{item.price}</span>
-                  </div>
-                  <p className="item__desc">{item.description}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
         </section>
 
-        <section className="hours" id="hours" aria-labelledby="hours-title">
-          <div className="section-head">
-            <h2 id="hours-title">Opening hours</h2>
-          </div>
-          <ul className="hours__list">
-            {hours.map((row) => (
-              <li
-                className={`hours__row${row.time === 'Closed' ? ' hours__row--closed' : ''}`}
-                key={row.days}
-              >
-                <span className="hours__days">{row.days}</span>
-                <span className="hours__leader" aria-hidden="true" />
-                <span className="hours__time">{row.time}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="visit" id="visit" aria-labelledby="visit-title">
-          <div className="visit__copy">
-            <div className="section-head">
-              <h2 id="visit-title">Visit us</h2>
+        <section className="collection" id="collection">
+          <div className="wrap collection-grid">
+            <div className="rail">
+              <p className="eyebrow">the current collection</p>
+              <h2>Indigo Hours</h2>
+              <p className="rail-note">
+                Twelve pieces — six shown here. Each one cut to your measure.
+              </p>
+              <div className="swatch" aria-hidden="true">
+                <Pattern />
+              </div>
+              <p className="swatch-cap">hand-dyed adire</p>
             </div>
-            <address className="visit__address">
-              <span className="visit__street">14 Mill Street</span>
-            </address>            <ul className="contact">
-              {contact.map((entry) => (
-                <li key={entry.label}>
-                  <a className="contact__link" href={entry.href}>
-                    <Icon name={entry.icon} />
-                    <span>{entry.label}</span>
-                  </a>
+            <ol className="pieces">
+              {pieces.map((piece) => (
+                <li className="piece" key={piece.index}>
+                  <span className="ring">{piece.index}</span>
+                  <h3 className="piece-name">{piece.name}</h3>
+                  <p className="price">{piece.price}</p>
                 </li>
               ))}
-            </ul>
+            </ol>
           </div>
-          <figure className="visit__media">
-            <img
-              src={loaves}
-              alt="Three seeded loaves of bread with a sheaf of wheat"
-              width="1400"
-              height="933"
-            />
-          </figure>
+        </section>
+
+        <section className="studio" id="studio">
+          <Pattern />
+          <div className="wrap">
+            <div className="studio-head">
+              <div>
+                <p className="eyebrow">the studio</p>
+                <h2>Made for you, not off a rack.</h2>
+              </div>
+              <p className="studio-para">
+                Since 2018, Adaeze Okafor has cut every Ọ̀dà Studio piece to order
+                from hand-dyed adire and aso-oke — made to your measure and ready in
+                three weeks.
+              </p>
+            </div>
+            <div className="facts">
+              {facts.map((fact) => (
+                <div className="fact" key={fact.label}>
+                  <p className="fact-label">{fact.label}</p>
+                  <p>{fact.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="visit" id="visit">
+          <div className="wrap visit-grid">
+            <div className="visit-lead">
+              <p className="eyebrow">the fitting</p>
+              <h2>Book a fitting.</h2>
+              <p>Fittings are by appointment at the studio in Ikoyi.</p>
+              <a
+                className="btn"
+                href="https://wa.me/2348035550142"
+                target="_blank"
+                rel="noopener"
+              >
+                Book on WhatsApp
+              </a>
+            </div>
+            <div className="visit-rows">
+              <div className="vrow">
+                <p className="vlabel">the address</p>
+                <p className="vval">9 Awolowo Road, Ikoyi, Lagos</p>
+              </div>
+              <div className="vrow">
+                <p className="vlabel">the hours</p>
+                <p className="vval">
+                  Tuesday to Saturday
+                  <br />
+                  10am to 6pm
+                </p>
+              </div>
+              <div className="vrow">
+                <p className="vlabel">reach the studio</p>
+                <ul className="vlinks">
+                  {channels.map((channel) => (
+                    <li key={channel.name}>
+                      <span className="chan">{channel.name}</span>
+                      <a
+                        href={channel.href}
+                        {...(channel.href.startsWith('http')
+                          ? { target: '_blank', rel: 'noopener' }
+                          : {})}
+                      >
+                        {channel.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+          <footer className="site-foot">
+            <div className="wrap foot-inner">
+              <p>© 2026 Ọ̀dà Studio</p>
+              <a href="#top">Back to top</a>
+            </div>
+          </footer>
         </section>
       </main>
-
-      <footer className="footer">
-        <p className="footer__mark">Crumb &amp; Co</p>
-        <a className="footer__top" href="#top">
-          Back to top
-        </a>
-      </footer>
     </>
   )
 }

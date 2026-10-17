@@ -4,6 +4,8 @@
 // saves screenshots to ./screenshots, then stops the server:
 //   desktop.png, mobile.png            the first screen (what shows before scrolling)
 //   desktop-full.png, mobile-full.png  the whole page
+// With --file <page.html> it opens that static file instead (no dev server).
+// --out <folder> and --prefix <text> change where images go and how they are named.
 // No packages needed: it uses Node and the Chrome already installed.
 // Full page screenshots need Node 22+ (built in WebSocket); older Node gets first screen only.
 
@@ -11,11 +13,21 @@ import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import { parseArgs } from "node:util";
+
+const { values: args } = parseArgs({
+  options: {
+    file: { type: "string" },
+    out: { type: "string", default: "screenshots" },
+    prefix: { type: "string", default: "" },
+  },
+});
 
 const PORT = 5199;
-const URL = `http://localhost:${PORT}/`;
+const URL = args.file ? pathToFileURL(resolve(args.file)).href : `http://localhost:${PORT}/`;
 const WAIT_MS = 30_000;
-// Time for React to render after the page load event.
+// Time for React (or web fonts) to render after the page load event.
 const RENDER_MS = 1_000;
 // Very tall images get scaled down by models until text is unreadable, so cap the full page height.
 const MAX_FULL_HEIGHT = 8_000;
@@ -74,8 +86,12 @@ async function waitForPage(server) {
   throw new Error(`page did not load at ${URL} within ${WAIT_MS / 1000}s`);
 }
 
-function save(file, base64) {
-  const out = resolve("screenshots", file);
+function outPath(name) {
+  return resolve(args.out, `${args.prefix}${name}.png`);
+}
+
+function save(name, base64) {
+  const out = outPath(name);
   writeFileSync(out, Buffer.from(base64, "base64"));
   return out;
 }
@@ -154,7 +170,7 @@ async function fullScreenshots(chrome) {
       await sleep(RENDER_MS);
 
       const first = await page("Page.captureScreenshot", { format: "png" });
-      outputs.push(save(`${name}.png`, first.data));
+      outputs.push(save(name, first.data));
 
       const { cssContentSize } = await page("Page.getLayoutMetrics");
       const fullHeight = Math.min(Math.ceil(cssContentSize.height), MAX_FULL_HEIGHT);
@@ -163,7 +179,7 @@ async function fullScreenshots(chrome) {
         captureBeyondViewport: true,
         clip: { x: 0, y: 0, width, height: fullHeight, scale: 1 },
       });
-      outputs.push(save(`${name}-full.png`, full.data));
+      outputs.push(save(`${name}-full`, full.data));
     }
     cdp.close();
     return outputs;
@@ -185,7 +201,7 @@ async function fullScreenshots(chrome) {
 // Fallback for Node without WebSocket: first screen only, using Chrome's screenshot flag.
 function firstScreenScreenshots(chrome) {
   return SIZES.map(({ name, width, height }) => {
-    const out = resolve("screenshots", `${name}.png`);
+    const out = outPath(name);
     const profile = mkdtempSync(join(tmpdir(), "skulptor-chrome-"));
     const result = spawnSync(chrome, [
       "--headless=new",
@@ -205,12 +221,26 @@ function firstScreenScreenshots(chrome) {
   });
 }
 
+async function takeScreenshots(chrome) {
+  if (typeof WebSocket === "undefined") {
+    console.warn(`Node ${process.version} has no WebSocket (needs 22+). Taking first screen screenshots only.`);
+    return firstScreenScreenshots(chrome);
+  }
+  return fullScreenshots(chrome);
+}
+
 async function main() {
   const chrome = findChrome();
   if (!chrome) throw new Error("Chrome not found. Set CHROME_PATH to your Chrome or Chromium binary.");
-  if (!existsSync("package.json")) throw new Error("No package.json here. Run this inside the app folder.");
+  mkdirSync(args.out, { recursive: true });
 
-  mkdirSync("screenshots", { recursive: true });
+  if (args.file) {
+    if (!existsSync(args.file)) throw new Error(`No file at ${args.file}`);
+    for (const out of await takeScreenshots(chrome)) console.log(out);
+    return;
+  }
+
+  if (!existsSync("package.json")) throw new Error("No package.json here. Run this inside the app folder.");
   const server = startServer();
   process.on("SIGINT", () => {
     stopServer(server);
@@ -219,12 +249,7 @@ async function main() {
 
   try {
     await waitForPage(server);
-    if (typeof WebSocket === "undefined") {
-      console.warn(`Node ${process.version} has no WebSocket (needs 22+). Taking first screen screenshots only.`);
-      for (const out of firstScreenScreenshots(chrome)) console.log(out);
-    } else {
-      for (const out of await fullScreenshots(chrome)) console.log(out);
-    }
+    for (const out of await takeScreenshots(chrome)) console.log(out);
   } finally {
     stopServer(server);
   }
