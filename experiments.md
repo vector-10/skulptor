@@ -148,6 +148,14 @@ Same setup as Test 10 with `deepseek/deepseek-v4.1-flash`: a fresh Vite React ap
 | Test 7b | Skulptor v3 (Kimi designs and checks, DeepSeek builds) | $0.67 + DeepSeek | 25m | Its own idea ("set at 4am"), no repeats, nothing invented, but sparse with dead space |
 | Test 6 | Skulptor v2 (DeepSeek alone with the skill) | $0.05 | ~20m | Its own idea (morning timeline), some dead space |
 
+## Test 12: skill v3, bakery, live demo run
+
+Fresh Vite React app at `~/Desktop/fullstack/skulptor-demo`, the Test 7 bakery prompt, photos from `examples/bakery/`, skill v3 copied into `.agents/skills/`. R-CLI with deepseek/deepseek-v4.1-flash. This is the page deployed as the live demo. Screenshots in `notes/test12-demo/`.
+
+| Date | tsc | build | Renders | Cost | Time | Result |
+|---|---|---|---|---|---|---|
+| Oct 18 | | Pass (dist built) | Pass | | | Best page of the project. Build matches Kimi's prototype exactly. Dark hero with a real croissant photo and a big serif headline with amber italic words, a "4:00 AM, Ovens lit" clock card as the signature, menu grouped into Bread and Pastries with dotted leaders, hours and visit side by side, a large wordmark footer ("See you in the morning."). No repeated copy, nothing invented. Misses: empty space left of the About text on desktop, an abrupt amber glow band under the hero. |
+
 ## Findings so far
 
 * Different models produce the same default template from a short prompt.

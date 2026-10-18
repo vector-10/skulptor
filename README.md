@@ -4,7 +4,7 @@ Skulptor is an open Agent Skill that gives a coding agent a design team. Before 
 
 It runs only on open weight models: **Kimi K3** designs and checks, **DeepSeek V4.1 Flash** builds. Both go through one Backboard API key.
 
-**Live demo:** [link coming]
+**Live demo:** [Crumb & Co, a bakery page built with Skulptor](https://kaleidoscopic-horse-71483f.netlify.app/)
 
 ## The problem
 
