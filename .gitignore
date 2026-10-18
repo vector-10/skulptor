@@ -9,3 +9,6 @@ dist/
 
 # Skulptor screenshots (made fresh on every run)
 screenshots/
+# Local workshop files (not part of the skill)
+CLAUDE.md
+.claude/

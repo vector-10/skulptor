@@ -14,7 +14,7 @@ I tested this. With the same bakery prompt and no skill, a cheap model (DeepSeek
 
 | DeepSeek alone ($0.13) | Kimi K3 alone ($1.09) |
 |---|---|
-| ![DeepSeek alone](notes/test11-raw-deepseek/desktop.png) | ![Kimi alone](notes/test10-raw-kimi/desktop.png) |
+| ![DeepSeek alone](https://raw.githubusercontent.com/vector-10/skulptor-lab/main/notes/test11-raw-deepseek/desktop.png) | ![Kimi alone](https://raw.githubusercontent.com/vector-10/skulptor-lab/main/notes/test10-raw-kimi/desktop.png) |
 
 ## How it works
 
@@ -25,15 +25,15 @@ Skulptor copies how a real design team hands work to a developer:
 3. **Check.** `screenshot.mjs` takes desktop and phone screenshots. `critique.mjs` sends the prototype and the build to the critic model, which lists at most 3 differences to fix.
 4. **Fix.** At most 2 rounds, then a report with the cost of each step.
 
-With the skill, the same bakery prompt gave a page with its own idea ("the page is set at 4am", with a glowing oven clock), no repeated content and nothing invented. The build matched the prototype almost pixel for pixel.
+With the skill, the same bakery prompt gave the live demo: real photos, a big serif headline, a glowing "4:00 AM, ovens lit" clock, and a menu grouped into bread and pastries. No repeated content, nothing invented, and the build matches the prototype.
 
 | Kimi's prototype | DeepSeek's build |
 |---|---|
-| ![Prototype](notes/test7b-prototype-desktop-full.png) | ![Build](notes/test7b-build-desktop-full.png) |
+| ![Prototype](https://raw.githubusercontent.com/vector-10/skulptor-lab/main/notes/test12-demo/prototype-desktop-full.png) | ![Build](https://raw.githubusercontent.com/vector-10/skulptor-lab/main/notes/test12-demo/desktop-full.png) |
 
 ## Results
 
-Same bakery prompt every time. Full logs, with costs and times, are in [experiments.md](experiments.md).
+Same bakery prompt every time. Full logs and screenshots, with costs and times, are in [skulptor-lab](https://github.com/vector-10/skulptor-lab). The full story is in the [DEV write up](https://dev.to/vectorware/beyond-the-purple-gradient-i-gave-an-open-coding-agent-a-design-team-2gah).
 
 | Run | Models | Cost | Result |
 |---|---|---|---|
@@ -41,6 +41,7 @@ Same bakery prompt every time. Full logs, with costs and times, are in [experime
 | No skill | Kimi K3 | $1.09 | Generic template, repeats itself |
 | Skulptor v2 | DeepSeek only | $0.05 | Its own idea (a morning timeline), some empty space |
 | Skulptor v3 | Kimi K3 designs and checks, DeepSeek builds | about $0.70 | Its own idea, exact build, but sparse |
+| Skulptor v3, fresh run | Same as above | about $0.70 | The best page so far (the live demo) |
 
 What I learned:
 
@@ -48,7 +49,7 @@ What I learned:
 * Splitting the designer and the builder makes the build exact.
 * A critic needs a picture to compare against. Vague critique ("improve it") gives random results.
 * A good prompt reads like a client brief: all the facts, no style words.
-* **Limit:** the designs are still too sparse, with empty space on desktop. Taste did not come from more rules.
+* **Limit:** quality still varies from run to run. Some designs come out too sparse, with empty space on desktop.
 
 ## Setup
 
