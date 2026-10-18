@@ -54,7 +54,7 @@ What I learned:
 
 You need:
 
-* [R-CLI](https://github.com/Backboard-io/Backboard-R-CLI) (or any agent that supports Agent Skills)
+* [R-CLI](https://github.com/Backboard-io/Backboard-R-CLI), or any agent that supports Agent Skills (Claude Code works too: put the skill in `.claude/skills/skulptor/`)
 * A [Backboard](https://backboard.io) API key
 * Node 22 or newer, and Google Chrome or Chromium (for screenshots). No npm packages.
 
@@ -65,7 +65,7 @@ Steps:
    ```
    BACKBOARD_API_KEY=your_key_here
    ```
-3. Put any photos you want on the page in `src/assets/` or `public/`.
+3. Put any photos you want on the page in `src/assets/` or `public/`. To try the bakery example below, copy the photos from `examples/bakery/` into your app's `src/assets/`.
 
 ## Usage
 
